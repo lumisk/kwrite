@@ -39,8 +39,8 @@ impl KoGPT2ModelConfig {
 
         KoGPT2Model {
             transformer,
-            embedding_token,
-            embedding_pos,
+            token_embedding: embedding_token,
+            positional_embedding: embedding_pos,
             output,
             vocab_size: self.vocab_size,
             pad_token: self.pad_token,
@@ -62,8 +62,8 @@ impl<B: Backend> KoGPT2Model<B> {
             .reshape([1, seq_length])
             .repeat(0, batch_size);
 
-        let embedding_positions = self.embedding_pos.forward(index_positions);
-        let embedding_tokens = self.embedding_token.forward(inputs);
+        let embedding_positions = self.positional_embedding.forward(index_positions);
+        let embedding_tokens = self.token_embedding.forward(inputs);
         let embedding = (embedding_positions + embedding_tokens) / 2;
 
         let mask_attn = generate_autoregressive_mask::<B>(batch_size, seq_length, device);
@@ -98,8 +98,8 @@ impl<B: Backend> KoGPT2Model<B> {
             .reshape([1, seq_length])
             .repeat(0, batch_size);
 
-        let embedding_positions = self.embedding_pos.forward(index_positions);
-        let embedding_tokens = self.embedding_token.forward(inputs);
+        let embedding_positions = self.positional_embedding.forward(index_positions);
+        let embedding_tokens = self.token_embedding.forward(inputs);
         let embedding = (embedding_positions + embedding_tokens) / 2;
 
         let mask_attn = generate_autoregressive_mask::<B>(batch_size, seq_length, device);
