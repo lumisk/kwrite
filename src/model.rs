@@ -24,7 +24,7 @@ pub struct KoGPT2Model<B: Backend> {
     transformer: TransformerEncoder<B>,
     token_embedding: Embedding<B>,
     positional_embedding: Embedding<B>,
-    output: Linear<B>,
+    linear: Linear<B>,
     vocab_size: usize,
     pad_token: usize,
     max_seq_length: usize,
@@ -41,7 +41,7 @@ impl KoGPT2ModelConfig {
             transformer,
             token_embedding: embedding_token,
             positional_embedding: embedding_pos,
-            output,
+            linear: output,
             vocab_size: self.vocab_size,
             pad_token: self.pad_token,
             max_seq_length: self.max_seq_length,
@@ -71,7 +71,7 @@ impl<B: Backend> KoGPT2Model<B> {
             .mask_pad(mask_pad)
             .mask_attn(mask_attn));
 
-        let output = self.output.forward(encoded);
+        let output = self.linear.forward(encoded);
         let output_flatten = output.reshape([batch_size * seq_length, self.vocab_size]);
         let targets_flatten = targets.reshape([batch_size * seq_length]);
 
@@ -107,7 +107,7 @@ impl<B: Backend> KoGPT2Model<B> {
             .mask_pad(mask_pad)
             .mask_attn(mask_attn));
 
-        let output = self.output.forward(encoded);
+        let output = self.linear.forward(encoded);
         let output_flatten = output.reshape([batch_size * seq_length, self.vocab_size]);
 
         output_flatten
