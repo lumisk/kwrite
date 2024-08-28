@@ -22,8 +22,8 @@ pub struct KoGPT2ModelConfig {
 #[derive(Module, Debug)]
 pub struct KoGPT2Model<B: Backend> {
     transformer: TransformerEncoder<B>,
-    embedding_token: Embedding<B>,
-    embedding_pos: Embedding<B>,
+    token_embedding: Embedding<B>,
+    positional_embedding: Embedding<B>,
     output: Linear<B>,
     vocab_size: usize,
     pad_token: usize,
