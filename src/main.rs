@@ -16,7 +16,7 @@ type MyBackend = backend::Wgpu;
 fn main() {
     let device = <MyBackend as Backend>::Device::default();
     let pt_recorder = PyTorchFileRecorder::<FullPrecisionSettings>::default();
-    let loaded: KoGPT2ModelRecord<MyBackend> = pt_recorder.load("/home/tmvkrpxl0/kogpt2-base-v2/pytorch_model.bin".into(), &device).unwrap();
+    let loaded: KoGPT2ModelRecord<MyBackend> = pt_recorder.load("./kogpt2-base-v2/pytorch_model.bin".into(), &device).unwrap();
 
     dbg!(loaded.pad_token);
 }
