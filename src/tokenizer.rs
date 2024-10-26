@@ -11,7 +11,7 @@ pub struct GPT2Tokenizer {
 
 impl Default for GPT2Tokenizer {
     fn default() -> Self {
-        let mut tokenizer = Tokenizer::from_pretrained("gpt2", None).unwrap();
+        let mut tokenizer = Tokenizer::from_pretrained("./kogpt2-base-v2/tokenizer.json", None).unwrap();
         tokenizer.add_special_tokens(&[
             tokenizers::AddedToken::from(START_TOKEN, true),
             tokenizers::AddedToken::from(END_TOKEN, true),

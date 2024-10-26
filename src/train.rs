@@ -1,19 +1,20 @@
-use std::sync::Arc;
+use crate::data::{TextGenerationBatcher, TextGenerationItem};
+use crate::gpt_config::GptConfig;
+use crate::model::KoGPT2LMHeadModel;
+use crate::tokenizer::GPT2Tokenizer;
 use burn::config::Config;
 use burn::data::dataloader::DataLoaderBuilder;
-use burn::data::dataset::Dataset;
 use burn::data::dataset::transform::SamplerDataset;
+use burn::data::dataset::Dataset;
 use burn::lr_scheduler::noam::NoamLrSchedulerConfig;
 use burn::module::Module;
 use burn::nn::transformer::TransformerEncoderConfig;
 use burn::optim::AdamConfig;
 use burn::record::{CompactRecorder, DefaultRecorder, Recorder};
 use burn::tensor::backend::AutodiffBackend;
-use burn::train::LearnerBuilder;
 use burn::train::metric::{AccuracyMetric, CudaMetric, LearningRateMetric, LossMetric};
-use crate::data::{TextGenerationBatcher, TextGenerationItem};
-use crate::model::{KoGPT2Model, KoGPT2ModelConfig};
-use crate::tokenizer::GPT2Tokenizer;
+use burn::train::LearnerBuilder;
+use std::sync::Arc;
 
 #[derive(Config)]
 pub struct FineTuningConfig {
@@ -44,12 +45,7 @@ pub fn train<B: AutodiffBackend, D: Dataset<TextGenerationItem> + 'static>(
         max_seq_length: config.max_seq_length,
     };
 
-    let model: KoGPT2Model<B> = KoGPT2ModelConfig::new(
-        config.transformer.clone(),
-        tokenizer.vocab_size(),
-        tokenizer.pad_token() as usize,
-        config.max_seq_length
-    ).init(&device);
+    let model: KoGPT2LMHeadModel<B> = GptConfig::load("./kogpt2-base-v2/config.json").unwrap().init(&device);
 
     let dataloader_train = DataLoaderBuilder::new(batcher_train)
         .batch_size(config.batch_size)
